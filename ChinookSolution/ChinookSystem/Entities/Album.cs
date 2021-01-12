@@ -12,7 +12,7 @@ using System.ComponentModel.DataAnnotations;
 namespace ChinookSystem.Entities
 {
     [Table("Album")]
-    public class Album
+    internal class Album
     {
         private string _ReleaseLabel;
 
@@ -34,5 +34,11 @@ namespace ChinookSystem.Entities
             get { return _ReleaseLabel; }
             set { _ReleaseLabel = string.IsNullOrEmpty(value) ? null : value; }
         }
+
+        //[NotMapped] annotations are also allowed
+
+        //navigational properties
+        //many to one
+        public virtual Artist Artist { get; set; }
     }
 }
