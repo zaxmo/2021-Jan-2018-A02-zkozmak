@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace ChinookSystem.Entities
 {
-    class dummy
+    internal class Artist
     {
+
     }
 }
