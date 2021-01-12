@@ -19,8 +19,10 @@ namespace ChinookSystem.Entities
         [Key]
         public int AlbumId { get; set; }
 
+        [Required(ErrorMessage = "Album title is required")]
         [StringLength(160, ErrorMessage = "Title is limited to 160 characters.")]
         public string Title { get; set; }
+
 
         public int ArtistId { get; set; }
 
@@ -29,7 +31,7 @@ namespace ChinookSystem.Entities
         [StringLength(50, ErrorMessage = "Release label is limited to 50 characters.")]
         public string ReleaseLabel
         {
-            get { return _ReleaseLabel}
+            get { return _ReleaseLabel; }
             set { _ReleaseLabel = string.IsNullOrEmpty(value) ? null : value; }
         }
     }
