@@ -44,17 +44,26 @@ namespace WebApp.SamplePages
             if(ArtistList.SelectedIndex == 0)
             {
                 //index 0 is physically pointing to the prompt line
-                Message.Text = "Select an artist for the search";
+                //using messageusercontrol for your own message
+                MessageUserControl.ShowInfo("Search concern", "Select an artist for the search");
                 ArtistAlbumList.DataSource = null;
                 ArtistAlbumList.DataBind();
             }
             else
             {
-                AlbumController sysmgr = new AlbumController();
-                List<ChinookSystem.ViewModels.ArtistAlbums> info = sysmgr.Albums_GetAlbumsForArtist(
-                    int.Parse(ArtistList.SelectedValue));
-                ArtistAlbumList.DataSource = info;
-                ArtistAlbumList.DataBind();
+                //user friendly error handling
+                //normally when you leave the web page to your class library you will want to have error handling (try/catch)
+                //use messageusercontrol to handle errors
+                //messageusercontrol has try/catch embedded inside its logic 
+                MessageUserControl.TryRun(() =>
+                {
+                    AlbumController sysmgr = new AlbumController();
+                    List<ChinookSystem.ViewModels.ArtistAlbums> info = sysmgr.Albums_GetAlbumsForArtist(
+                        int.Parse(ArtistList.SelectedValue));
+                    ArtistAlbumList.DataSource = info;
+                    ArtistAlbumList.DataBind();
+                },"Success Message title", "your success message goes here");
+                
             }
         }
     }
