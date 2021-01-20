@@ -23,7 +23,7 @@
     </div>
     <div class="row">
         <div class="offset-3">
-            <asp:GridView ID="ArtistAlbumList" runat="server" AutoGenerateColumns="false" CssClass="table table-striped" GridLines="Horizontal" BorderStyle="Ridge">
+            <asp:GridView ID="ArtistAlbumList" runat="server" AutoGenerateColumns="false" CssClass="table table-striped" GridLines="Horizontal" BorderStyle="Ridge" OnSelectedIndexChanged="ArtistAlbumList_SelectedIndexChanged">
                 <Columns>
                     <asp:TemplateField HeaderText="Album">
                         <ItemTemplate>
@@ -59,7 +59,8 @@
             </asp:GridView>
             <asp:ObjectDataSource ID="ArtistListODS" runat="server" 
                 OldValuesParameterFormatString="original_{0}" 
-                SelectMethod="Artists_DDLList" 
+                SelectMethod="Artists_DDLList"
+                OnSelected="SelectCheckForException"
                 TypeName="ChinookSystem.BLL.ArtistController">
             </asp:ObjectDataSource>
         </div>
