@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 #region Additional Namespaces
 using ChinookSystem.DAL;
-using ChinookSystem.Entities;
-using ChinookSystem.ViewModels;
-using System.ComponentModel;
+using ChinookSystem.Entities;   //for Sql and are internal
+using ChinookSystem.ViewModels; //for data class to transfer data from BLL to web app
+using System.ComponentModel;    //for ODS wizard
 #endregion
 
 namespace ChinookSystem.BLL
@@ -16,8 +16,9 @@ namespace ChinookSystem.BLL
     [DataObject]
     public class AlbumController
     {
+        #region Queries
         [DataObjectMethod(DataObjectMethodType.Select, false)]
-        public List<ArtistAlbums> Albums_GetArtistAblums()
+        public List<ArtistAlbums> Albums_GetArtistAlbums()
         {
             using (var context = new ChinookSystemContext())
             {
@@ -31,7 +32,6 @@ namespace ChinookSystem.BLL
                 return results.ToList();
             }
         }
-
 
         [DataObjectMethod(DataObjectMethodType.Select, false)]
         public List<ArtistAlbums> Albums_GetAlbumsForArtist(int artistid)
@@ -51,7 +51,8 @@ namespace ChinookSystem.BLL
             }
         }
 
-        //query to return all data of the album table
+
+        //query to return all data of the Album table
         [DataObjectMethod(DataObjectMethodType.Select, false)]
         public List<AlbumItem> Albums_List()
         {
@@ -60,17 +61,17 @@ namespace ChinookSystem.BLL
                 IEnumerable<AlbumItem> results = from x in context.Albums
                                                  select new AlbumItem
                                                  {
+                                                     AlbumId = x.AlbumId,
                                                      Title = x.Title,
                                                      ReleaseYear = x.ReleaseYear,
                                                      ArtistId = x.ArtistId,
-                                                     AlbumId = x.AlbumId,
                                                      ReleaseLabel = x.ReleaseLabel
-
                                                  };
                 return results.ToList();
             }
         }
-        //query to look up an album
+
+        //query to look up an Album record by pkey
         [DataObjectMethod(DataObjectMethodType.Select, false)]
         public AlbumItem Albums_FindById(int albumid)
         {
@@ -93,53 +94,63 @@ namespace ChinookSystem.BLL
             }
         }
 
+        #endregion
+
         #region Add, Update and Delete CRUD
-        //add
+
+        //Add
         [DataObjectMethod(DataObjectMethodType.Insert, false)]
         public int Album_Add(AlbumItem item)
         {
-        using (var context = new ChinookSystemContext())
+            using (var context = new ChinookSystemContext())
             {
-                //due to the fact that we have separated the handling of our entities from the data transfer between web app and class library
-                // using the viewmodel classes, we MUST create an instance of the entity and move the data from the viewmodel class to the entity instance
-
+                //due to the fact that we have separated the handling of our entities
+                //   from the data transfer between web app and class library
+                //   using the ViewModel classes, we MUST create an instance
+                //   of the entity and move the data from the ViewModel class
+                //   to the entity instance
                 Album addItem = new Album
                 {
                     //why no pkey set?
-                    //pkey is an indetity pkey, no value is needed
+                    //pkey is an identity pkey, no value is needed
                     Title = item.Title,
                     ArtistId = item.ArtistId,
                     ReleaseYear = item.ReleaseYear,
                     ReleaseLabel = item.ReleaseLabel
                 };
 
-                //staging
+                //staging 
                 //setup in local memory
-                //at this point you will not have sent anything to the database
-                //therefore you will not have your new pkey yet
+                //at this point you will NOT have sent anything to the database
+                //      therefore, you will NOT have your new pkey as yet
                 context.Albums.Add(addItem);
+
                 //commit to database
                 //on this command you
-                //a) execute entity validation annotation
-                //b) send your local memory staging to the database for execution
-                //after a successful execution your entity instance will have the new pkey (indetity) value
+                //  a) execute entity validation annotation
+                //  b) send your local memory staging to the database for execution
+                //after a successful execution your entity instance will have the
+                //      new pkey (Identity) value
                 context.SaveChanges();
 
-                //at this point your entity instance has the new pkey value
+                //at this point, your entity instance has the new pkey value
                 return addItem.AlbumId;
             }
         }
-        //update
+        //Update
         [DataObjectMethod(DataObjectMethodType.Update, false)]
         public void Album_Update(AlbumItem item)
         {
             using (var context = new ChinookSystemContext())
             {
-                //due to the fact that we have separated the handling of our entities from the data transfer between web app and class library
-                // using the viewmodel classes, we MUST create an instance of the entity and move the data from the viewmodel class to the entity instance
-
+                //due to the fact that we have separated the handling of our entities
+                //   from the data transfer between web app and class library
+                //   using the ViewModel classes, we MUST create an instance
+                //   of the entity and move the data from the ViewModel class
+                //   to the entity instance
                 Album updateItem = new Album
                 {
+                    //for an update, you need to supply your pkey value
                     AlbumId = item.AlbumId,
                     Title = item.Title,
                     ArtistId = item.ArtistId,
@@ -147,25 +158,29 @@ namespace ChinookSystem.BLL
                     ReleaseLabel = item.ReleaseLabel
                 };
 
-                //staging
+                //staging 
                 //setup in local memory
 
                 context.Entry(updateItem).State = System.Data.Entity.EntityState.Modified;
+
                 //commit to database
                 //on this command you
-                //a) execute entity validation annotation
-                //b) send your local memory staging to the database for execution
+                //  a) execute entity validation annotation
+                //  b) send your local memory staging to the database for execution
 
                 context.SaveChanges();
+
             }
         }
-        //delete
+        //Delete
 
-        //when we do an ODS CRUD on the delete, the ODS sends in the entire instance record, not just the pkey value
+        //When we do an ODS CRUD on the delete, the ODS sends in the entire
+        //    instance record, not just the pkey value
 
-        //overload the Album_Delete method so it recieves a whole instance then call the actual delete method passing just 
-        // the pkey value to the actual delete method
-        [DataObjectMethod(DataObjectMethodType.Delete,false)]
+        //overload the Album_Delete method so it receive a whole instance
+        //    then call the actual delete method passing just the
+        //    pkey value to the actual delete method
+        [DataObjectMethod(DataObjectMethodType.Delete, false)]
         public void Album_Delete(AlbumItem item)
         {
             Album_Delete(item.AlbumId);
@@ -175,7 +190,8 @@ namespace ChinookSystem.BLL
         {
             using (var context = new ChinookSystemContext())
             {
-                //retrieve the current entity instance based on the incoming parameter
+                //example of a phyiscal delete
+                //retreive the current entity instance based on the incoming parameter
                 var exists = context.Albums.Find(albumid);
                 //staged the remove
                 context.Albums.Remove(exists);
